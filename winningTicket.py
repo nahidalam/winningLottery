@@ -1,70 +1,49 @@
-totalCount = 7
-maxTensDigit = '5'
-allowedChars = ['0','1','2','3','4','5','6','7','8','9']
-prevChar = ''
-res = []
-
+'''
+Runs on Python 3.x
+Author: Nahid Alam
+'''
 def findTicket(numStr):
-    global prevChar
-    for currStr in numStr:
-        length = len(currStr)
+    numListList = [list(map(int, x)) for x in numStr]
+    for l in numListList:
+        length = len(l)
         if length <7 or length > 14:
             continue
-        for i in range (len(currStr)):
-            currChar = currStr[i]
-            if currChar not in allowedChars:
-                print("Input must be a char in the range of 0-9")
-                break
-            elif currChar == '0':
-
-                continue
-            elif prevChar:
-                #we have enough characters to create a two digit number
-                addToList(currChar)
-            elif currChar > maxTensDigit:
-                #current number >5, we can't form a two digit number
-                addToList(currChar)
-            elif len(currStr) - i == totalCount - len(res):
-                addToList(currChar)
-            else:
-                prevChar = currChar
-        #if len(res) != 7:
-        #    continue
-        print (res)
+        res = []
+        dfs(l, res, 0)
+        #print(res)
+        if res:
+            #print result in the desired format
+            str1 = ''.join(list(map(str, l)))
+            str2 = ' '.join(list(map(str, res)))
+            toPrint = str1 + '->' + str2
+            print(toPrint)
 
 
-def addOneDigitChar(currChar):
-    global prevChar
-    num = int(currChar)
-    if num not in res:
-        res.append(num)
-    prevChar = ''
+def dfs(numList, res, index):
+    if index == len (numList):
 
-
-def addTwoDigitChar(currChar):
-    global prevChar
-    numTwoDigit = int(prevChar+currChar)
-    if numTwoDigit not in res:
-        res.append(numTwoDigit)
-        prevChar = ''
-    else:
-        #the combined number already exists in the list
-        #so use the prevChar to add an one digit number to the list
-        addOneDigitChar(prevChar)
-        if currChar > maxTensDigit:
-            addOneDigitChar(currChar)
+        if len(res) == 7:
+            return res
         else:
-            prevChar = currChar
+            return  []  #return an empty list
 
 
-def addToList(currChar):
-    if prevChar:
-        addTwoDigitChar(currChar)
-    else:
-        addOneDigitChar(currChar)
-
+    num1 = numList[index]
+    if num1 >=1 and num1 <=59 and (num1 not in res):
+        res.append(num1)
+        result = dfs(numList, res, index+1)
+        if result: #result is not empty
+            return result
+        res.remove(num1)
+    if index < len(numList) - 1:
+        num = numList[index] * 10 + numList[index+1]
+        if num >=1 and num <=59 and (num not in res):
+            res.append(num)
+            result = dfs(numList, res, index+2)
+            if result: #result is not empty
+                return result
+            res.remove(num)
 
 if __name__ == '__main__':
-    #numStr = [ "569815571556", "4938532894754", "1234567", "472844278465445"]
-    numStr = [ "4938532894754", "1234567"]
+    numStr = ["569815571556", "4938532894754", "1234567", "472844278465445"]
     findTicket(numStr)
